@@ -11,30 +11,53 @@ body {
     min-height: 100vh;
     padding: 20px;
     display: flex;
-    flex-direction: column;
+    justify-content: center;
     align-items: center;
 }
 
-h1 {
-    color: white;
-    text-align: center;
-    margin: 20px 0;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+.container {
+    max-width: 800px;
+    width: 100%;
+    background-color: rgba(255, 255, 255, 0.95);
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+    padding: 30px;
+    margin: 20px;
 }
 
-#quoteDisplay {
+header {
+    text-align: center;
+    margin-bottom: 30px;
+    padding-bottom: 20px;
+    border-bottom: 2px solid #6e8efb;
+}
+
+h1 {
+    color: #6e8efb;
+    font-size: 2.5rem;
+    margin-bottom: 10px;
+}
+
+.tagline {
+    color: #777;
+    font-size: 1.2rem;
+}
+
+.quote-box {
     background: white;
     border-radius: 10px;
     padding: 25px;
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
     margin-bottom: 20px;
-    min-height: 150px;
-    width: 80%;
-    max-width: 600px;
+    min-height: 200px;
     display: flex;
     flex-direction: column;
     justify-content: center;
-    align-items: center;
+    transition: transform 0.3s ease;
+}
+
+.quote-box:hover {
+    transform: translateY(-5px);
 }
 
 .quote-text {
@@ -46,10 +69,30 @@ h1 {
     text-align: center;
 }
 
-.quote-category {
-    text-align: center;
+.quote-author {
+    text-align: right;
     color: #6e8efb;
     font-weight: 600;
+}
+
+.quote-category {
+    display: inline-block;
+    background: #a777e3;
+    color: white;
+    padding: 5px 10px;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    margin-top: 10px;
+    text-align: center;
+    width: 100%;
+}
+
+.buttons {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+    justify-content: center;
 }
 
 button {
@@ -61,7 +104,7 @@ button {
     font-weight: 600;
     cursor: pointer;
     transition: all 0.3s ease;
-    margin: 10px;
+    min-width: 120px;
 }
 
 button:hover {
@@ -83,8 +126,6 @@ button:hover {
     padding: 20px;
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
     margin-bottom: 20px;
-    width: 80%;
-    max-width: 600px;
     display: flex;
     flex-direction: column;
     gap: 15px;
@@ -103,19 +144,25 @@ input:focus {
     outline: none;
 }
 
-#categoryFilter {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 10px;
-    margin-top: 20px;
+.category-filters-card {
+    background: white;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
 }
 
-#categoryFilter h3 {
-    width: 100%;
+.category-filters-card h2 {
+    color: #6e8efb;
+    margin-bottom: 15px;
     text-align: center;
-    color: white;
-    margin-bottom: 10px;
+}
+
+.category-filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
 }
 
 .category-btn {
@@ -128,7 +175,56 @@ input:focus {
     font-size: 0.9rem;
 }
 
-.category-btn:hover {
+.category-btn:hover, .category-btn.active {
     background: #6e8efb;
     color: white;
+}
+
+.import-section {
+    background: white;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.import-section h2 {
+    color: #6e8efb;
+    margin-bottom: 15px;
+}
+
+.storage-info {
+    background: #f0f8ff;
+    border-radius: 10px;
+    padding: 15px;
+    text-align: center;
+    font-size: 0.9rem;
+}
+
+.storage-info p {
+    margin-bottom: 10px;
+}
+
+#quoteCount {
+    font-weight: bold;
+    color: #6e8efb;
+}
+
+@media (max-width: 768px) {
+    h1 {
+        font-size: 2rem;
+    }
+    
+    .quote-text {
+        font-size: 1.3rem;
+    }
+    
+    .buttons {
+        flex-direction: column;
+    }
+    
+    button {
+        width: 100%;
+    }
 }
