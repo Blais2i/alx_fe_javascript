@@ -87,6 +87,29 @@ h1 {
     width: 100%;
 }
 
+.filter-section {
+    background: white;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.filter-section h2 {
+    color: #6e8efb;
+    margin-bottom: 15px;
+}
+
+.filter-section select {
+    padding: 10px;
+    border: 2px solid #ddd;
+    border-radius: 5px;
+    font-size: 1rem;
+    width: 100%;
+    max-width: 300px;
+}
+
 .buttons {
     display: flex;
     gap: 10px;
@@ -139,7 +162,7 @@ input {
     width: 100%;
 }
 
-input:focus {
+input:focus, select:focus {
     border-color: #6e8efb;
     outline: none;
 }
@@ -226,5 +249,9 @@ input:focus {
     
     button {
         width: 100%;
+    }
+    
+    .filter-section select {
+        max-width: 100%;
     }
 }

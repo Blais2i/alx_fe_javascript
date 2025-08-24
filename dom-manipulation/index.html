@@ -10,13 +10,21 @@
     <div class="container">
         <header>
             <h1>Dynamic Quote Generator</h1>
-            <p class="tagline">Now with Web Storage & JSON Support</p>
+            <p class="tagline">Now with Category Filtering & Web Storage</p>
         </header>
         
         <div class="quote-box">
             <p id="quoteText" class="quote-text">Click the button to generate a random quote!</p>
             <p id="quoteAuthor" class="quote-author"></p>
             <span id="quoteCategory" class="quote-category"></span>
+        </div>
+        
+        <div class="filter-section">
+            <h2>Filter by Category</h2>
+            <select id="categoryFilter">
+                <option value="all">All Categories</option>
+                <!-- Dynamically populated categories -->
+            </select>
         </div>
         
         <div class="buttons">
@@ -33,21 +41,21 @@
         </div>
         
         <div class="category-filters-card">
-            <h2>Filter by Category</h2>
+            <h2>Quick Category Filters</h2>
             <div id="categoryFilters" class="category-filters">
                 <!-- Category buttons will be generated here -->
             </div>
         </div>
         
         <div class="import-section">
-    <h2>Import Quotes</h2>
-    <input type="file" id="importFile" accept=".json">
-    <p>Upload a JSON file to add quotes to your collection</p>
-    </div>
+            <h2>Import Quotes</h2>
+            <input type="file" id="importFile" accept=".json">
+            <p>Upload a JSON file to add quotes to your collection</p>
+        </div>
         
         <div class="storage-info">
             <p>Quotes stored: <span id="quoteCount">0</span></p>
-            <p>Last viewed quote saved in session storage</p>
+            <p>Last filter preference saved in local storage</p>
         </div>
     </div>
 
