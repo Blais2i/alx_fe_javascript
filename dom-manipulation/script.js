@@ -179,7 +179,7 @@ function addQuote() {
         populateCategories();
         
         // Trigger sync
-        syncWithServer();
+        syncQuotes();
         
         // Show success message
         alert('Quote added successfully!');
@@ -230,7 +230,7 @@ function importFromJsonFile(event) {
                 filterQuotes();
                 
                 // Trigger sync
-                syncWithServer();
+                syncQuotes();
             } else {
                 alert('Invalid JSON format. Please check the file structure.');
             }
@@ -245,11 +245,11 @@ function importFromJsonFile(event) {
 }
 
 // Simulate fetching quotes from server
-async function fetchFromServer() {
+async function fetchQuotesFromServer() {
     // Simulate network delay
     await new Promise(resolve => setTimeout(resolve, 1000));
     
-    // In a real app, this would be an actual API call
+    // In a real app, this would be an actual API call to JSONPlaceholder or similar
     // For simulation, we'll return some mock data
     const mockServerQuotes = [
         { id: 5, text: "The only limit to our realization of tomorrow is our doubts of today.", author: "Franklin D. Roosevelt", category: "Inspiration", version: 1 },
@@ -261,7 +261,7 @@ async function fetchFromServer() {
 }
 
 // Simulate posting quotes to server
-async function postToServer(quotesToSync) {
+async function postQuotesToServer(quotesToSync) {
     // Simulate network delay
     await new Promise(resolve => setTimeout(resolve, 1000));
     
@@ -272,7 +272,7 @@ async function postToServer(quotesToSync) {
 }
 
 // Sync with server
-async function syncWithServer() {
+async function syncQuotes() {
     updateSyncStatus('Syncing...');
     
     try {
@@ -281,7 +281,7 @@ async function syncWithServer() {
         
         // Send local changes to server
         if (quotesToSync.length > 0) {
-            const result = await postToServer(quotesToSync);
+            const result = await postQuotesToServer(quotesToSync);
             if (result.success) {
                 // Mark quotes as synced
                 quotes.forEach(quote => {
@@ -293,7 +293,7 @@ async function syncWithServer() {
         }
         
         // Fetch updates from server
-        const serverQuotes = await fetchFromServer();
+        const serverQuotes = await fetchQuotesFromServer();
         
         // Merge server quotes with local quotes
         serverQuotes.forEach(serverQuote => {
@@ -400,12 +400,12 @@ function resolveConflicts() {
 
 // Manual sync trigger
 function manualSync() {
-    syncWithServer();
+    syncQuotes();
 }
 
 // Start periodic syncing
 function startSyncInterval() {
-    syncInterval = setInterval(syncWithServer, SYNC_INTERVAL);
+    syncInterval = setInterval(syncQuotes, SYNC_INTERVAL);
 }
 
 // Stop periodic syncing
