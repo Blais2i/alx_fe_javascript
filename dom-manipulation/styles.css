@@ -43,7 +43,58 @@ h1 {
     font-size: 1.2rem;
 }
 
-.quote-box {
+.sync-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding: 15px;
+    background: #f0f8ff;
+    border-radius: 10px;
+}
+
+.sync-status {
+    font-size: 0.9rem;
+    color: #666;
+}
+
+.sync-status.syncing {
+    color: #ff9900;
+    font-weight: bold;
+}
+
+.conflict-notification {
+    background: #fff3cd;
+    border: 1px solid #ffeaa7;
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.conflict-notification h3 {
+    color: #856404;
+    margin-bottom: 15px;
+}
+
+.conflict-item {
+    padding: 10px;
+    margin-bottom: 10px;
+    background: #fff;
+    border-radius: 5px;
+    border-left: 4px solid #fd7e14;
+}
+
+.conflict-badge {
+    display: inline-block;
+    background: #fd7e14;
+    color: white;
+    padding: 3px 8px;
+    border-radius: 10px;
+    font-size: 0.8rem;
+    margin-left: 10px;
+}
+
+#quoteDisplay {
     background: white;
     border-radius: 10px;
     padding: 25px;
@@ -53,18 +104,25 @@ h1 {
     display: flex;
     flex-direction: column;
     justify-content: center;
-    transition: transform 0.3s ease;
 }
 
-.quote-box:hover {
-    transform: translateY(-5px);
+.quote-item {
+    margin-bottom: 20px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #eee;
+}
+
+.quote-item:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+    padding-bottom: 0;
 }
 
 .quote-text {
     font-size: 1.5rem;
     line-height: 1.6;
     color: #444;
-    margin-bottom: 15px;
+    margin-bottom: 10px;
     font-style: italic;
     text-align: center;
 }
@@ -73,6 +131,7 @@ h1 {
     text-align: right;
     color: #6e8efb;
     font-weight: 600;
+    margin-bottom: 10px;
 }
 
 .quote-category {
@@ -82,7 +141,6 @@ h1 {
     padding: 5px 10px;
     border-radius: 20px;
     font-size: 0.9rem;
-    margin-top: 10px;
     text-align: center;
     width: 100%;
 }
@@ -167,42 +225,6 @@ input:focus, select:focus {
     outline: none;
 }
 
-.category-filters-card {
-    background: white;
-    border-radius: 10px;
-    padding: 20px;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-    margin-bottom: 20px;
-}
-
-.category-filters-card h2 {
-    color: #6e8efb;
-    margin-bottom: 15px;
-    text-align: center;
-}
-
-.category-filters {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    justify-content: center;
-}
-
-.category-btn {
-    padding: 8px 15px;
-    background: #eee;
-    border: none;
-    border-radius: 20px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    font-size: 0.9rem;
-}
-
-.category-btn:hover, .category-btn.active {
-    background: #6e8efb;
-    color: white;
-}
-
 .import-section {
     background: white;
     border-radius: 10px;
@@ -253,5 +275,10 @@ input:focus, select:focus {
     
     .filter-section select {
         max-width: 100%;
+    }
+    
+    .sync-controls {
+        flex-direction: column;
+        gap: 10px;
     }
 }
