@@ -350,7 +350,7 @@ async function postQuotesToServer(quotesToSync) {
             method: 'POST',
             body: JSON.stringify(quotesToSync),
             headers: {
-                'Content-Type': 'application/json; charset=UTF-8', // Fixed: Added proper Content-Type header
+                'Content-Type': 'application/json; charset=UTF-8',
             },
         });
         
