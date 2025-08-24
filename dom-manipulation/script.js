@@ -16,6 +16,7 @@ const quoteForm = document.getElementById('addQuoteForm');
 const categoryFiltersContainer = document.getElementById('categoryFilters');
 const exportJsonButton = document.getElementById('exportJson');
 const quoteCountElement = document.getElementById('quoteCount');
+const importFileInput = document.getElementById('importFile');
 
 // Current category filter
 let currentCategory = 'all';
@@ -160,17 +161,19 @@ function updateCategoryFilters() {
     });
 }
 
-// Function to export quotes as JSON
+// Function to export quotes as JSON using Blob
 function exportToJsonFile() {
     const dataStr = JSON.stringify(quotes, null, 2);
-    const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+    const blob = new Blob([dataStr], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
     
-    const exportFileDefaultName = 'quotes.json';
-    
-    const linkElement = document.createElement('a');
-    linkElement.setAttribute('href', dataUri);
-    linkElement.setAttribute('download', exportFileDefaultName);
-    linkElement.click();
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = 'quotes.json';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
 }
 
 // Function to import quotes from JSON file
@@ -207,6 +210,7 @@ function importFromJsonFile(event) {
 newQuoteButton.addEventListener('click', showRandomQuote);
 showFormButton.addEventListener('click', createAddQuoteForm);
 exportJsonButton.addEventListener('click', exportToJsonFile);
+importFileInput.addEventListener('change', importFromJsonFile);
 
 // Initialize the app
 function init() {
