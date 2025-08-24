@@ -7,6 +7,7 @@ let quotes = [
 ];
 
 // DOM elements
+const quoteDisplay = document.getElementById('quoteDisplay');
 const quoteTextElement = document.getElementById('quoteText');
 const quoteAuthorElement = document.getElementById('quoteAuthor');
 const quoteCategoryElement = document.getElementById('quoteCategory');
@@ -82,9 +83,7 @@ function showRandomQuote() {
         : quotes.filter(quote => quote.category.toLowerCase() === currentCategory);
     
     if (filteredQuotes.length === 0) {
-        quoteTextElement.textContent = "No quotes found for this category.";
-        quoteAuthorElement.textContent = "";
-        quoteCategoryElement.textContent = "";
+        quoteDisplay.innerHTML = '<p class="quote-text">No quotes found for this category.</p>';
         return;
     }
     
@@ -139,7 +138,7 @@ function addQuote() {
         currentCategory = newQuoteCategory.toLowerCase();
         categoryFilterSelect.value = currentCategory;
         saveLastCategory(currentCategory);
-        showRandomQuote();
+        filterQuotes();
         
         // Show success message
         alert('Quote added successfully!');
@@ -172,8 +171,8 @@ function updateCategoryFilters() {
             // Update active button
             document.querySelectorAll('.category-btn').forEach(btn => btn.classList.remove('active'));
             button.classList.add('active');
-            // Show a quote from the selected category
-            showRandomQuote();
+            // Filter quotes based on selected category
+            filterQuotes();
         });
         
         categoryFiltersContainer.appendChild(button);
@@ -211,12 +210,21 @@ function filterQuotes() {
     // Update active button
     document.querySelectorAll('.category-btn').forEach(btn => {
         btn.classList.remove('active');
-        if (btn.textContent.toLowerCase() === selectedCategory) {
+        if (btn.textContent.toLowerCase() === selectedCategory || (selectedCategory === 'all' && btn.textContent.toLowerCase() === 'all')) {
             btn.classList.add('active');
         }
     });
     
-    showRandomQuote();
+    // Filter and update the displayed quotes
+    let filteredQuotes = currentCategory === 'all' 
+        ? quotes 
+        : quotes.filter(quote => quote.category.toLowerCase() === currentCategory);
+    
+    if (filteredQuotes.length === 0) {
+        quoteDisplay.innerHTML = '<p class="quote-text">No quotes found for this category.</p>';
+    } else {
+        showRandomQuote();
+    }
 }
 
 // Function to export quotes as JSON using Blob
@@ -251,7 +259,7 @@ function importFromJsonFile(event) {
                 populateCategories();
                 updateCategoryFilters();
                 alert(`Successfully imported ${importedQuotes.length} quotes!`);
-                showRandomQuote();
+                filterQuotes();
             } else {
                 alert('Invalid JSON format. Please check the file structure.');
             }
@@ -277,7 +285,7 @@ function init() {
     loadQuotes();
     populateCategories();
     updateCategoryFilters();
-    showRandomQuote();
+    filterQuotes();
 }
 
 // Call init when the page loads
