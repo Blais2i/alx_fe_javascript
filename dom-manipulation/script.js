@@ -42,12 +42,22 @@ function loadQuotes() {
     }
     
     updateSyncStatus();
+    updateQuoteCount();
 }
 
 // Save quotes to local storage
 function saveQuotes() {
     localStorage.setItem('quotes', JSON.stringify(quotes));
     localStorage.setItem('lastSyncTime', lastSyncTime.toString());
+    updateQuoteCount();
+}
+
+// Update quote count display
+function updateQuoteCount() {
+    const quoteCountElement = document.getElementById('quoteCount');
+    if (quoteCountElement) {
+        quoteCountElement.textContent = quotes.length;
+    }
 }
 
 // Save last selected category to local storage
@@ -122,10 +132,12 @@ function showRandomQuote() {
     const randomQuote = filteredQuotes[randomIndex];
     
     quoteDisplay.innerHTML = `
-        <p class="quote-text">"${randomQuote.text}"</p>
-        <p class="quote-author">- ${randomQuote.author}</p>
-        <span class="quote-category">${randomQuote.category}</span>
-        ${randomQuote.conflict ? '<span class="conflict-badge">Conflict</span>' : ''}
+        <div class="quote-item">
+            <p class="quote-text">"${randomQuote.text}"</p>
+            <p class="quote-author">- ${randomQuote.author}</p>
+            <span class="quote-category">${randomQuote.category}</span>
+            ${randomQuote.conflict ? '<span class="conflict-badge">Conflict</span>' : ''}
+        </div>
     `;
 }
 
@@ -178,14 +190,55 @@ function addQuote() {
         // Update categories
         populateCategories();
         
+        // Show success message with notification
+        showNotification('Quote added successfully!', 'success');
+        
         // Trigger sync
         syncQuotes();
-        
-        // Show success message
-        alert('Quote added successfully!');
     } else {
-        alert('Please fill in all fields.');
+        showNotification('Please fill in all fields.', 'error');
     }
+}
+
+// Show notification function
+function showNotification(message, type = 'info') {
+    // Remove any existing notification
+    const existingNotification = document.querySelector('.custom-notification');
+    if (existingNotification) {
+        existingNotification.remove();
+    }
+    
+    // Create notification element
+    const notification = document.createElement('div');
+    notification.className = `custom-notification ${type}`;
+    notification.textContent = message;
+    
+    // Style the notification
+    notification.style.position = 'fixed';
+    notification.style.top = '20px';
+    notification.style.right = '20px';
+    notification.style.padding = '10px 20px';
+    notification.style.borderRadius = '5px';
+    notification.style.color = 'white';
+    notification.style.zIndex = '1000';
+    notification.style.boxShadow = '0 4px 12px rgba(0,0,0,0.15)';
+    
+    // Set background color based on type
+    if (type === 'success') {
+        notification.style.backgroundColor = '#4CAF50';
+    } else if (type === 'error') {
+        notification.style.backgroundColor = '#f44336';
+    } else {
+        notification.style.backgroundColor = '#2196F3';
+    }
+    
+    // Add to document
+    document.body.appendChild(notification);
+    
+    // Remove after 3 seconds
+    setTimeout(() => {
+        notification.remove();
+    }, 3000);
 }
 
 // Function to export quotes as JSON using Blob
@@ -201,6 +254,8 @@ function exportToJsonFile() {
     link.click();
     document.body.removeChild(link);
     URL.revokeObjectURL(url);
+    
+    showNotification('Quotes exported successfully!', 'success');
 }
 
 // Function to import quotes from JSON file
@@ -226,16 +281,16 @@ function importFromJsonFile(event) {
                 quotes.push(...enhancedQuotes);
                 saveQuotes();
                 populateCategories();
-                alert(`Successfully imported ${importedQuotes.length} quotes!`);
+                showNotification(`Successfully imported ${importedQuotes.length} quotes!`, 'success');
                 filterQuotes();
                 
                 // Trigger sync
                 syncQuotes();
             } else {
-                alert('Invalid JSON format. Please check the file structure.');
+                showNotification('Invalid JSON format. Please check the file structure.', 'error');
             }
         } catch (error) {
-            alert('Error parsing JSON file: ' + error.message);
+            showNotification('Error parsing JSON file: ' + error.message, 'error');
         }
     };
     reader.readAsText(file);
@@ -249,6 +304,10 @@ async function fetchQuotesFromServer() {
     try {
         // Use JSONPlaceholder API as required
         const response = await fetch('https://jsonplaceholder.typicode.com/posts');
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
         const posts = await response.json();
         
         // Convert posts to our quote format
@@ -257,7 +316,8 @@ async function fetchQuotesFromServer() {
             text: post.title,
             author: `User ${post.userId}`,
             category: 'Server',
-            version: 1
+            version: 1,
+            server: true // Mark as from server
         }));
         
         // Add a simulated update to an existing quote
@@ -266,7 +326,8 @@ async function fetchQuotesFromServer() {
             text: "The only way to do great work is to love what you do. (Server Updated)",
             author: "Steve Jobs",
             category: "Work",
-            version: 2
+            version: 2,
+            server: true
         });
         
         return serverQuotes;
@@ -274,9 +335,9 @@ async function fetchQuotesFromServer() {
         console.error('Failed to fetch from server:', error);
         // Fallback to mock data if fetch fails
         return [
-            { id: 5, text: "The only limit to our realization of tomorrow is our doubts of today.", author: "Franklin D. Roosevelt", category: "Inspiration", version: 1 },
-            { id: 6, text: "It is during our darkest moments that we must focus to see the light.", author: "Aristotle", category: "Perseverance", version: 1 },
-            { id: 1, text: "The only way to do great work is to love what you do. (Server Updated)", author: "Steve Jobs", category: "Work", version: 2 }
+            { id: 5, text: "The only limit to our realization of tomorrow is our doubts of today.", author: "Franklin D. Roosevelt", category: "Inspiration", version: 1, server: true },
+            { id: 6, text: "It is during our darkest moments that we must focus to see the light.", author: "Aristotle", category: "Perseverance", version: 1, server: true },
+            { id: 1, text: "The only way to do great work is to love what you do. (Server Updated)", author: "Steve Jobs", category: "Work", version: 2, server: true }
         ];
     }
 }
@@ -289,23 +350,27 @@ async function postQuotesToServer(quotesToSync) {
             method: 'POST',
             body: JSON.stringify(quotesToSync),
             headers: {
-                'Content-type': 'application/json; charset=UTF-8',
+                'Content-Type': 'application/json; charset=UTF-8', // Fixed: Added proper Content-Type header
             },
         });
+        
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
         
         const result = await response.json();
         console.log('Posted to server:', result);
         return { success: true, timestamp: Date.now() };
     } catch (error) {
         console.error('Failed to post to server:', error);
-        // Simulate success even if post fails for demo purposes
-        return { success: true, timestamp: Date.now() };
+        return { success: false, error: error.message };
     }
 }
 
 // Sync with server
 async function syncQuotes() {
     updateSyncStatus('Syncing...');
+    showNotification('Syncing with server...', 'info');
     
     try {
         // Get local quotes that need to be synced
@@ -321,11 +386,16 @@ async function syncQuotes() {
                         delete quote.local;
                     }
                 });
+                showNotification(`${quotesToSync.length} quotes synced to server`, 'success');
+            } else {
+                showNotification('Failed to sync quotes to server', 'error');
             }
         }
         
         // Fetch updates from server
         const serverQuotes = await fetchQuotesFromServer();
+        let newQuotesCount = 0;
+        let updatedQuotesCount = 0;
         
         // Merge server quotes with local quotes
         serverQuotes.forEach(serverQuote => {
@@ -334,6 +404,7 @@ async function syncQuotes() {
             if (localQuoteIndex === -1) {
                 // New quote from server
                 quotes.push(serverQuote);
+                newQuotesCount++;
             } else {
                 // Existing quote - check for conflicts
                 const localQuote = quotes[localQuoteIndex];
@@ -341,7 +412,8 @@ async function syncQuotes() {
                 if (serverQuote.version > localQuote.version) {
                     // Server has newer version - update local
                     quotes[localQuoteIndex] = { ...serverQuote };
-                } else if (serverQuote.version < localQuote.version) {
+                    updatedQuotesCount++;
+                } else if (serverQuote.version < localQuote.version && !localQuote.local) {
                     // Local has newer version - server should update (simulated)
                     console.log('Local has newer version, should update server');
                 } else if (serverQuote.version === localQuote.version && 
@@ -367,9 +439,17 @@ async function syncQuotes() {
         updateSyncStatus();
         showConflicts();
         
+        // Show sync summary
+        if (newQuotesCount > 0 || updatedQuotesCount > 0) {
+            showNotification(`Sync complete: ${newQuotesCount} new, ${updatedQuotesCount} updated quotes`, 'success');
+        } else {
+            showNotification('Sync complete: No new updates', 'info');
+        }
+        
     } catch (error) {
         console.error('Sync failed:', error);
         updateSyncStatus('Sync failed');
+        showNotification('Sync failed: ' + error.message, 'error');
     }
 }
 
@@ -405,6 +485,8 @@ function showConflicts() {
             `;
             conflictList.appendChild(conflictItem);
         });
+        
+        showNotification(`${conflictQueue.length} conflicts detected`, 'error');
     } else {
         conflictNotification.style.display = 'none';
     }
@@ -412,6 +494,8 @@ function showConflicts() {
 
 // Resolve conflicts (always use server version for simplicity)
 function resolveConflicts() {
+    if (conflictQueue.length === 0) return;
+    
     conflictQueue.forEach(conflict => {
         const quoteIndex = quotes.findIndex(q => q.id === conflict.id);
         if (quoteIndex !== -1) {
@@ -422,12 +506,15 @@ function resolveConflicts() {
     });
     
     // Clear conflict queue
+    const resolvedCount = conflictQueue.length;
     conflictQueue = [];
     
     // Update UI
     showConflicts();
     filterQuotes();
     saveQuotes();
+    
+    showNotification(`${resolvedCount} conflicts resolved`, 'success');
 }
 
 // Manual sync trigger
