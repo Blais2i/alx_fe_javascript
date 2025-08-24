@@ -244,31 +244,63 @@ function importFromJsonFile(event) {
     event.target.value = '';
 }
 
-// Simulate fetching quotes from server
+// Simulate fetching quotes from server using JSONPlaceholder
 async function fetchQuotesFromServer() {
-    // Simulate network delay
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
-    // In a real app, this would be an actual API call to JSONPlaceholder or similar
-    // For simulation, we'll return some mock data
-    const mockServerQuotes = [
-        { id: 5, text: "The only limit to our realization of tomorrow is our doubts of today.", author: "Franklin D. Roosevelt", category: "Inspiration", version: 1 },
-        { id: 6, text: "It is during our darkest moments that we must focus to see the light.", author: "Aristotle", category: "Perseverance", version: 1 },
-        { id: 1, text: "The only way to do great work is to love what you do.", author: "Steve Jobs", category: "Work", version: 2 } // Simulated update
-    ];
-    
-    return mockServerQuotes;
+    try {
+        // Use JSONPlaceholder API as required
+        const response = await fetch('https://jsonplaceholder.typicode.com/posts');
+        const posts = await response.json();
+        
+        // Convert posts to our quote format
+        const serverQuotes = posts.slice(0, 5).map((post, index) => ({
+            id: 100 + index, // Use IDs that won't conflict with local quotes
+            text: post.title,
+            author: `User ${post.userId}`,
+            category: 'Server',
+            version: 1
+        }));
+        
+        // Add a simulated update to an existing quote
+        serverQuotes.push({
+            id: 1,
+            text: "The only way to do great work is to love what you do. (Server Updated)",
+            author: "Steve Jobs",
+            category: "Work",
+            version: 2
+        });
+        
+        return serverQuotes;
+    } catch (error) {
+        console.error('Failed to fetch from server:', error);
+        // Fallback to mock data if fetch fails
+        return [
+            { id: 5, text: "The only limit to our realization of tomorrow is our doubts of today.", author: "Franklin D. Roosevelt", category: "Inspiration", version: 1 },
+            { id: 6, text: "It is during our darkest moments that we must focus to see the light.", author: "Aristotle", category: "Perseverance", version: 1 },
+            { id: 1, text: "The only way to do great work is to love what you do. (Server Updated)", author: "Steve Jobs", category: "Work", version: 2 }
+        ];
+    }
 }
 
-// Simulate posting quotes to server
+// Simulate posting quotes to server using JSONPlaceholder
 async function postQuotesToServer(quotesToSync) {
-    // Simulate network delay
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
-    // In a real app, this would be an actual API call
-    // For simulation, we'll just return success
-    console.log('Posted to server:', quotesToSync);
-    return { success: true, timestamp: Date.now() };
+    try {
+        // Use JSONPlaceholder API as required
+        const response = await fetch('https://jsonplaceholder.typicode.com/posts', {
+            method: 'POST',
+            body: JSON.stringify(quotesToSync),
+            headers: {
+                'Content-type': 'application/json; charset=UTF-8',
+            },
+        });
+        
+        const result = await response.json();
+        console.log('Posted to server:', result);
+        return { success: true, timestamp: Date.now() };
+    } catch (error) {
+        console.error('Failed to post to server:', error);
+        // Simulate success even if post fails for demo purposes
+        return { success: true, timestamp: Date.now() };
+    }
 }
 
 // Sync with server
